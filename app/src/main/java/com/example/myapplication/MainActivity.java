@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //connection(server, port);
 
         TextView textView = (TextView) findViewById(R.id.textView);
         Button button = (Button) findViewById(R.id.button);
@@ -43,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                             Socket socket = new Socket(server, port);
                             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                             output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-                            
+
                             String text = textMatrikelnummer.getText().toString();
                             output.println(text);
 
@@ -58,49 +57,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 };
-
                 Thread thread = new Thread(runnable);
                 thread.start();
             }
         });
-
-
-
     }
-
-    /*
-    protected void connection(String server, int port) {
-
-        TextView textView = (TextView) findViewById(R.id.textView);
-        Button button = (Button) findViewById(R.id.button);
-        EditText textMatrikelnummer = (EditText) findViewById(R.id.textFieldMatrikelnummer);
-        EditText textOutput = (EditText) findViewById(R.id.textFieldOutput);
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Socket socket = new Socket(server, port);
-                    input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    output = new PrintWriter(new BufferedWriter(
-                            new OutputStreamWriter(socket.getOutputStream())), true);
-
-
-
-                    input.close();
-                    output.close();
-                    socket.close();
-                } catch (Exception exception) {
-                    exception.getStackTrace();
-                }
-            }
-        };
-
-        Thread thread = new Thread(runnable);
-        thread.start();
-    }
-
-     */
-
-
 }
