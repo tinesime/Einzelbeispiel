@@ -23,16 +23,16 @@ public class MainActivity extends AppCompatActivity {
     protected PrintWriter output;
     protected BufferedReader input;
 
-    TextView textView = (TextView) findViewById(R.id.textView);
-    Button button = (Button) findViewById(R.id.button);
-    Button berechnen = (Button) findViewById(R.id.button2);
-    EditText textMatrikelnummer = (EditText) findViewById(R.id.textFieldMatrikelnummer);
-    EditText textOutput = (EditText) findViewById(R.id.textFieldOutput);
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TextView textView = (TextView) findViewById(R.id.textView);
+        Button button = (Button) findViewById(R.id.button);
+        Button berechnen = (Button) findViewById(R.id.button2);
+        EditText textMatrikelnummer = (EditText) findViewById(R.id.textFieldMatrikelnummer);
+        EditText textOutput = (EditText) findViewById(R.id.textFieldOutput);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,10 +44,15 @@ public class MainActivity extends AppCompatActivity {
                             Socket socket = new Socket(server, port);
                             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                             output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+
+                            // Sende Nachricht
                             String text = textMatrikelnummer.getText().toString();
                             output.println(text);
+
+                            // Empfange Nachricht
                             String inputText = input.readLine();
                             textOutput.setText(inputText);
+
                             input.close();
                             output.close();
                             socket.close();
@@ -72,12 +77,34 @@ public class MainActivity extends AppCompatActivity {
                             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                             output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
+                            // Sende Nachricht
                             String text = textMatrikelnummer.getText().toString().trim();
+
+                            // Berechne Matrikelnummer % 7
                             int temp = Integer.parseInt(text);
                             int result = temp % 7;
-                            System.out.println(result);
                             Log.d("Result", String.valueOf(result));
+
                             int number = Integer.parseInt(text);
+                            int altSum = 0;
+                            int i = 0;
+                            while (number != 0) {
+                                if (i == 0) {
+                                    altSum = number;
+                                } else {
+                                    if (i % 2 == 0) {
+                                        altSum = altSum + number;
+                                    } else {
+                                        altSum = altSum - number;
+                                    }
+                                }
+                                i++;
+                            }
+                            Log.d("Temp", String.valueOf(altSum));
+                            output.println(altSum);
+
+                            /*
+                            Log.d("Number", String.valueOf(number));
                             int altSum = 0;
                             for (int i = 0; i > number; i++) {
                                 if (i % 2 == 0) {
@@ -89,7 +116,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                             Log.d("AltSum", String.valueOf(altSum));
                             output.println(altSum);
+                             */
 
+                            // Empfange Nachricht
                             String inputText = input.readLine();
                             textOutput.setText(inputText);
 
