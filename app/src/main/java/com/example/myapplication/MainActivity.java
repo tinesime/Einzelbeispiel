@@ -71,18 +71,28 @@ public class MainActivity extends AppCompatActivity {
                             Socket socket = new Socket(server, port);
                             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                             output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+
                             String text = textMatrikelnummer.getText().toString().trim();
                             int temp = Integer.parseInt(text);
                             int result = temp % 7;
                             System.out.println(result);
                             Log.d("Result", String.valueOf(result));
-                            if (alternierendeQuersumme(text).equals("Ihr Wert ist gerade")) {
-                                output.println("Ihr Wert ist gerade");
-                            } else {
-                                output.println("Ihr Wert ist ungerade");
+                            int number = Integer.parseInt(text);
+                            int altSum = 0;
+                            for (int i = 0; i > number; i++) {
+                                if (i % 2 == 0) {
+                                    altSum = altSum + number % 10;
+                                } else {
+                                    altSum = altSum - number % 10;
+                                }
+                                number = number / 10;
                             }
+                            Log.d("AltSum", String.valueOf(altSum));
+                            output.println(altSum);
+
                             String inputText = input.readLine();
                             textOutput.setText(inputText);
+
                             input.close();
                             output.close();
                             socket.close();
@@ -95,24 +105,5 @@ public class MainActivity extends AppCompatActivity {
                 thread.start();
             }
         });
-    }
-
-    protected String alternierendeQuersumme(String text) {
-        text = textMatrikelnummer.getText().toString().trim();
-        int number = Integer.parseInt(text);
-        int altSum = 0;
-        for (int i = 0; i > number; i++) {
-            if (i % 2 == 0) {
-                altSum = altSum + number % 10;
-            } else {
-                altSum = altSum - number % 10;
-            }
-            number = number / 10;
-        }
-        if (altSum % 2 == 0) {
-            return "Ihr Wert ist gerade";
-        } else {
-            return "Ihr Wert ist ungerade";
-        }
     }
 }
