@@ -40,25 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            Socket socket = new Socket(server, port);
-                            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                            output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-
-                            // Sende Nachricht
-                            String text = textMatrikelnummer.getText().toString();
-                            output.println(text);
-
-                            // Empfange Nachricht
-                            String inputText = input.readLine();
-                            textOutput.setText(inputText);
-
-                            input.close();
-                            output.close();
-                            socket.close();
-                        } catch (Exception exception) {
-                            exception.getStackTrace();
-                        }
+                        sendListener();
                     }
                 };
                 Thread thread = new Thread(runnable);
@@ -72,67 +54,76 @@ public class MainActivity extends AppCompatActivity {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            Socket socket = new Socket(server, port);
-                            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                            output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-
-                            // Sende Nachricht
-                            String text = textMatrikelnummer.getText().toString().trim();
-
-                            // Berechne Matrikelnummer % 7
-                            int temp = Integer.parseInt(text);
-                            int result = temp % 7;
-                            Log.d("Result", String.valueOf(result));
-
-                            int number = Integer.parseInt(text);
-                            int altSum = 0;
-                            int i = 0;
-                            while (number != 0) {
-                                if (i == 0) {
-                                    altSum = number;
-                                } else {
-                                    if (i % 2 == 0) {
-                                        altSum = altSum + number;
-                                    } else {
-                                        altSum = altSum - number;
-                                    }
-                                }
-                                i++;
-                            }
-                            Log.d("Temp", String.valueOf(altSum));
-                            output.println(altSum);
-
-                            /*
-                            Log.d("Number", String.valueOf(number));
-                            int altSum = 0;
-                            for (int i = 0; i > number; i++) {
-                                if (i % 2 == 0) {
-                                    altSum = altSum + number % 10;
-                                } else {
-                                    altSum = altSum - number % 10;
-                                }
-                                number = number / 10;
-                            }
-                            Log.d("AltSum", String.valueOf(altSum));
-                            output.println(altSum);
-                             */
-
-                            // Empfange Nachricht
-                            String inputText = input.readLine();
-                            textOutput.setText(inputText);
-
-                            input.close();
-                            output.close();
-                            socket.close();
-                        } catch (Exception exception) {
-                            exception.getStackTrace();
-                        }
+                        computeListener();
                     }
                 };
                 Thread thread = new Thread(runnable);
                 thread.start();
             }
         });
+    }
+
+    private void sendListener() {
+        EditText textMatrikelnummer = (EditText) findViewById(R.id.textFieldMatrikelnummer);
+        EditText textOutput = (EditText) findViewById(R.id.textFieldOutput);
+
+        try {
+            // define properties
+            Socket socket = new Socket(server, port);
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+
+            // Sende Nachricht
+            String text = textMatrikelnummer.getText().toString();
+            output.println(text);
+
+            // Empfange Nachricht
+            String inputText = input.readLine();
+            textOutput.setText(inputText);
+
+            // Close all handles
+            input.close();
+            output.close();
+            socket.close();
+        } catch (Exception exception) {
+            exception.getStackTrace();
+        }
+    }
+
+    private void computeListener() {
+        EditText textMatrikelnummer = (EditText) findViewById(R.id.textFieldMatrikelnummer);
+        EditText textOutput = (EditText) findViewById(R.id.textFieldOutput);
+
+        // get text from the text field
+        String text = textMatrikelnummer.getText().toString();
+
+        // Berechne Matrikelnummer % 7
+        int num = Integer.parseInt(text);
+        int result = num % 7;
+        Log.d("Result", String.valueOf(result)); // 0
+
+        char[] numbers = text.toCharArray();
+        int[] array = new int[numbers.length];
+
+        // fill te array
+        for (int i = 0; i < array.length; i++) {
+            array[i] = Character.getNumericValue(numbers[i]);
+        }
+
+        // compute alternating sum of digits
+        int altSum = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (i % 2 == 0) {
+                altSum += array[i];
+            } else {
+                altSum -= array[i];
+            }
+        }
+
+        // convert the alternating sum into a string for the output
+        String res = Integer.toString(altSum);
+
+        // print result in the text field
+        textOutput.setText(res);
     }
 }
